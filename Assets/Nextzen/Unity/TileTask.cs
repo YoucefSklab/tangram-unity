@@ -31,11 +31,38 @@ public class TileTask
         get { return data; }
     }
 
+    public Matrix4x4 Transform
+    {
+        get
+        {
+            return transform;
+        }
+
+        set
+        {
+            transform = value;
+        }
+    }
+
+    public TileAddress Address
+    {
+        get
+        {
+            return address;
+        }
+
+        set
+        {
+            address = value;
+        }
+    }
+
+
     public TileTask(MapStyle featureStyling, TileAddress address, Matrix4x4 transform, int generation)
     {
         this.data = new List<FeatureMesh>();
         this.address = address;
-        this.transform = transform;
+        this.Transform = transform;
         this.generation = generation;
         this.featureStyling = featureStyling;
     }
@@ -74,7 +101,7 @@ public class TileTask
 
                         if (polygonOptions.Enabled)
                         {
-                            handler = new PolygonBuilder(featureMesh.Mesh, polygonOptions, transform);
+                            handler = new PolygonBuilder(featureMesh.Mesh, polygonOptions, Transform);
                         }
                     }
 
@@ -84,7 +111,7 @@ public class TileTask
 
                         if (polylineOptions.Enabled)
                         {
-                            handler = new PolylineBuilder(featureMesh.Mesh, polylineOptions, transform);
+                            handler = new PolylineBuilder(featureMesh.Mesh, polylineOptions, Transform);
                         }
                     }
 

@@ -61,6 +61,7 @@ namespace Nextzen.Unity
                 gameObject = transform.gameObject;
             }
 
+         
             return gameObject;
         }
 
@@ -76,6 +77,11 @@ namespace Nextzen.Unity
                 MeshData data = new MeshData();
                 data.Merge(featureMesh.Mesh);
                 gameObjectMeshData.Add(gameObject, data);
+
+                Debug.Log("Game Object Created: "+gameObject.name);
+                Debug.Log("         Its Vertices: "+data.MeshDataVerticesToString());
+                Debug.Log("         Its UVs: "+data.MeshDataUVsToString());
+                Debug.Log("         Its Submeshes: "+data.MeshDataSubmeshesToString());
             }
         }
 
@@ -158,6 +164,7 @@ namespace Nextzen.Unity
                     for (int s = 0; s < meshBucket.Submeshes.Count; s++)
                     {
                         mesh.SetTriangles(meshBucket.Submeshes[s].Indices, s);
+                        
                     }
                     mesh.RecalculateNormals();
 

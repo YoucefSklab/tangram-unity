@@ -58,6 +58,8 @@ namespace Nextzen.Unity
         public MeshData Mesh
         {
             get { return mesh; }
+
+            set { mesh = value; }
         }
     }
 }

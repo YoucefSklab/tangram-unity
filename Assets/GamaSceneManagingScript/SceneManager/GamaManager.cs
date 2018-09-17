@@ -117,6 +117,8 @@ public class GamaManager : MonoBehaviour
 		client.Subscribe (new string[] { MqttSetting.NOTIFICATION_TOPIC }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
 
 		NotificationRegistry.getCallingMethod ();
+
+		Debug.Log("Gama Manger started");
 	}
 
 

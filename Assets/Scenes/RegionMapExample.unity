@@ -158,6 +158,23 @@ MonoBehaviour:
     GeneratePhysicMeshCollider: 1
     PhysicMaterial: {fileID: 0}
   Style: {fileID: 11400000, guid: 55b6d5ee799474205b5745d930cce11d, type: 2}
+  tempTransform:
+    e00: 61.149624
+    e01: 0
+    e02: 0
+    e03: 122.29925
+    e10: 0
+    e11: 61.149624
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 61.149624
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 1
 --- !u!4 &349009245
 Transform:
   m_ObjectHideFlags: 0
@@ -180,6 +197,7 @@ GameObject:
   m_Component:
   - component: {fileID: 486197481}
   - component: {fileID: 486197480}
+  - component: {fileID: 486197482}
   m_Layer: 0
   m_Name: GamaManager
   m_TagString: Untagged
@@ -212,6 +230,28 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &486197482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 486197479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3239ccae0e7b4a369fcff48f85d8acc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  receivedMsg: 
+  clientId: 2f3d2686-0c14-49b5-8cc0-57a0abe42de2
+  allObjects: []
+  gamaManager: {fileID: 0}
+  targetGameObject: {fileID: 0}
+  topicGameObject: {fileID: 0}
+  objectsList: []
+  setTopicManager: {fileID: 0}
+  getTotpicManager: {fileID: 0}
+  moveTopicManager: {fileID: 0}
+  notificationTopicManager: {fileID: 0}
 --- !u!1 &530800346
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,6 +381,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a4a7ed39e044d99978b09e43feb4a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gamaBuilder: {fileID: 0}
+  regionMap: {fileID: 0}
 --- !u!4 &920255049
 Transform:
   m_ObjectHideFlags: 0

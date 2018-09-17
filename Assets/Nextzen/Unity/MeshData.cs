@@ -36,6 +36,70 @@ namespace Nextzen.Unity
             Meshes = new List<MeshBucket>();
         }
 
+        public string MeshDataVerticesToString()
+        {
+            string meshDataString =  "Total Meshes is: "+Meshes.Count +" - ";
+            int nbr = 0;
+            int nbr2 = 0;
+            foreach (var mData in Meshes)
+            {
+                meshDataString +=  "--> The "+nbr2+" Vertices number is: "+mData.Vertices.Count+" [";
+                nbr2 ++;
+                foreach (var vert in mData.Vertices)
+                {
+                    meshDataString += vert.ToString();
+                    nbr++;
+                }
+                 meshDataString += "] \n";
+            }
+            meshDataString += " Total Vertices is -> "+nbr;
+         
+            return meshDataString;
+        }
+
+        public string MeshDataUVsToString()
+        {
+            string meshDataString = " [";
+            int nbr = 0;
+            foreach (var mData in Meshes)
+            {
+                foreach (var vert in mData.UVs)
+                {
+                    meshDataString += vert.ToString();
+                    nbr++;
+                }
+            }
+            meshDataString += "]  Total UV is -> "+nbr;
+            return meshDataString;
+        }
+
+        public string MeshDataSubmeshesToString()
+        {
+            string meshDataString = "Total Meshes is "+Meshes.Count+" ";
+            int nbrEl = 0;
+            int nbrEl2 = 0;
+            foreach (var mData in Meshes)
+            { 
+                meshDataString += nbrEl2+ " ->  Its Indices number is "+mData.Submeshes.Count+" [ ";
+
+                nbrEl2++;
+
+                foreach (var vert in mData.Submeshes)
+                {
+                    meshDataString += " Indices [ ";
+                    foreach (var nbr in vert.Indices)
+                    {
+                        meshDataString += nbr + ", ";
+                        nbrEl ++;
+                    }
+                  //  meshDataString += " ] Material [ " +vert.Material.ToString()+" ] " ;
+                    meshDataString += " ] " + " Total Indices number is -> "+vert.Indices.Count;
+                }
+            }
+            meshDataString += "]";
+            return meshDataString;
+        }
+
         public void Merge(MeshData other)
         {
             foreach (var bucket in other.Meshes)
@@ -67,6 +131,7 @@ namespace Nextzen.Unity
                     }
 
                     AddElements(vertices, uvs, indices, submesh.Material);
+
                 }
             }
         }
@@ -121,5 +186,19 @@ namespace Nextzen.Unity
                 submesh.Indices.Add(index + offset);
             }
         }
+
+        //-----------------------------------------------
+        public void addGamaMeshData(List<Vector3> vertices, List<Vector2> uVs, List<Submesh> Submeshes)
+        {
+            MeshBucket meshBucket = new MeshBucket();
+            meshBucket.Vertices = vertices;
+            meshBucket.UVs = uVs;
+            meshBucket.Submeshes = Submeshes;
+
+            this.Meshes.Add(meshBucket);
+        }
+        //-----------------------------------------------
+
+
     }
 }

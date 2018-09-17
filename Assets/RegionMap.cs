@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 namespace Nextzen
 {
     public class RegionMap : MonoBehaviour
@@ -21,16 +22,16 @@ namespace Nextzen
 
         public string ApiKey = "NO9atv-JQf289NztiKv45g";
 
-/* 
+        /* 
+                public TileArea Area = new TileArea(
+                    new LngLat(-74.014892578125, 40.70562793820589),
+                    new LngLat(-74.00390625, 40.713955826286046),
+                    16);
+        */
         public TileArea Area = new TileArea(
-            new LngLat(-74.014892578125, 40.70562793820589),
-            new LngLat(-74.00390625, 40.713955826286046),
-            16);
-*/
-         public TileArea Area = new TileArea(
-            new LngLat(-74.009463, 40.711446),
-            new LngLat(-73.999306, 40.706939),
-            16);
+           new LngLat(-74.009463, 40.711446),
+           new LngLat(-73.999306, 40.706939),
+           16);
 
         public float UnitsPerMeter = 1.0f;
 
@@ -58,6 +59,8 @@ namespace Nextzen
 
         private TileCache tileCache = new TileCache(50);
 
+        public Matrix4x4 tempTransform;
+
         public void DownloadTilesAsync()
         {
             TileBounds bounds = new TileBounds(Area);
@@ -73,6 +76,8 @@ namespace Nextzen
                 nTasksForArea++;
             }
 
+
+
             foreach (var tileAddress in bounds.TileAddressRange)
             {
                 float offsetX = (tileAddress.x - bounds.min.x);
@@ -82,6 +87,7 @@ namespace Nextzen
                 Matrix4x4 scale = Matrix4x4.Scale(new Vector3(scaleRatio, scaleRatio, scaleRatio));
                 Matrix4x4 translate = Matrix4x4.Translate(new Vector3(offsetX * scaleRatio, 0.0f, offsetY * scaleRatio));
                 Matrix4x4 transform = translate * scale;
+                tempTransform = transform;
 
                 IEnumerable<FeatureCollection> featureCollections = tileCache.Get(tileAddress);
 
@@ -95,6 +101,7 @@ namespace Nextzen
                         {
                             task.Start(featureCollections);
                             tasks.Add(task);
+                            Debug.Log("New Task to add is (1) " + task.Address.ToString());
                         }
                     });
                 }
@@ -147,6 +154,8 @@ namespace Nextzen
                                 task.Start(mvtTile.FeatureCollections);
 
                                 tasks.Add(task);
+                                Debug.Log("New Task (from else) to add is " + task.Address.ToString());
+                                Debug.Log("Data is " + task.Data.Count);
                             }
                         });
                     };
@@ -155,6 +164,8 @@ namespace Nextzen
                     StartCoroutine(tileIO.FetchNetworkData(uri, onTileFetched));
                 }
             }
+
+
         }
 
         public bool HasPendingTasks()
@@ -180,9 +191,100 @@ namespace Nextzen
 
         public void GenerateSceneGraph()
         {
+            // Add tasks here! 
+            //------------------------------------------------------------------
+            Debug.Log("Calling method - > GenerateSceneGraph ");
+
+            List<FeatureMesh> meshList = new List<FeatureMesh>();
+            FeatureMesh featureMesh = new FeatureMesh("NameGama1", "GamaBlocks", "NameGama3", "Blok1"); meshList.Add(featureMesh);
+            featureMesh = new FeatureMesh("NameGama1", "GamaBlocks", "GamaBlocks", "Block2"); meshList.Add(featureMesh);
+            featureMesh = new FeatureMesh("NameGama1", "GamaBlocks", "Na6", "Block3"); meshList.Add(featureMesh);
+            featureMesh = new FeatureMesh("NameGama1", "GamaRoads", "NameGama9", "Road1"); meshList.Add(featureMesh);
+
+
+
+
+            featureMesh = new FeatureMesh("NameGama11", "GamaRoads", "NameGama13", "Road2");
+            // featureMesh.Mesh = new MeshData();
+
+            MeshData meshData = featureMesh.Mesh;
+            // List<Submesh> Submeshes = new List<Submesh>();
+            List<Vector3> Vertices = new List<Vector3>();
+            List<Vector2> UVs = new List<Vector2>();
+            
+
+            Vertices.AddRange(new List<Vector3> {  new Vector3 (1643.2f, 1.0f, 483.2f),
+                                                    new Vector3 (1645.2f, 1.0f, 433.0f),
+                                                    new Vector3 (1633.2f, 1.0f, 432.5f),
+                                                    new Vector3 (1631.2f, 1.0f, 482.7f)
+                             });
+            UVs.AddRange(new List<Vector2> {
+                new Vector2(0.0f, 0.0f),new Vector2(0.0f, 4.2f),new Vector2(1.0f, 4.2f),new Vector2(1.0f, 0.0f)
+            });
+            List<MeshData.Submesh> Submeshes = new List<MeshData.Submesh>();
+            MeshData.Submesh submesh = new MeshData.Submesh();
+
+            List<int> Indices = new List<int> { 0, 2, 3, 2, 0, 1 };
+            //Material Material = new Material(contents: "UVGrid");
+            submesh.Indices = Indices;
+            Submeshes.Add(submesh);
+
+
+
+
+
+            meshData.addGamaMeshData(Vertices, UVs, Submeshes);
+            featureMesh.Mesh = meshData;
+
+            //meshData.Meshes
+
+            meshList.Add(featureMesh);
+
+
+            //Cube 
+
+
+            featureMesh = new FeatureMesh("NameGama11", "GamaRoads", "NameGama13", "Cube3");
+            // featureMesh.Mesh = new MeshData();
+
+            meshData = featureMesh.Mesh;
+            // List<Submesh> Submeshes = new List<Submesh>();
+            Vertices = new List<Vector3>();
+            UVs = new List<Vector2>();
+
+            Vertices.AddRange(new List<Vector3> {   new Vector3 (0, 0, 0),
+                                                     new Vector3 (100, 0, 0),
+                                                     new Vector3 (100, 100, 0),
+                                                     new Vector3 (0, 100, 0),
+                                                     new Vector3 (0, 100, 100),
+                                                     new Vector3 (100, 100, 100),
+                                                     new Vector3 (100, 0, 100),
+                                                     new Vector3 (0, 0, 100)
+                              });
+
+            UVs.AddRange(new List<Vector2> {
+               new Vector2(0.0f,0.2f),new Vector2(0.0f,0.2f),new Vector2(0.0f,0.0f),new Vector2(0.0f,0.0f),new Vector2(0.1f,0.2f),new Vector2(0.0f,0.2f),new Vector2(0.1f,0f),new Vector2(0.0f,0.0f)
+            
+             });
+            Submeshes = new List<MeshData.Submesh>();
+            submesh = new MeshData.Submesh();
+
+            Indices = new List<int> { 0, 2, 1, 0, 3, 2, 2, 3, 4, 2, 4, 5, 1, 2, 5, 1, 5, 6, 0, 7, 4, 0, 4, 3, 5, 4, 7, 5, 7, 6, 0, 6, 7, 0, 1, 6 };
+            //Indices = new List<int> ();
+            submesh.Indices = Indices;
+            Submeshes.Add(submesh);
+
+            meshData.addGamaMeshData(Vertices, UVs, Submeshes);
+            featureMesh.Mesh = meshData;
+            meshList.Add(featureMesh);
+
+
+
+
+
             if (regionMap != null)
             {
-                DestroyImmediate(regionMap);
+                DestroyImmediate(regionMap); Debug.Log("regionMap is Null");
             }
 
             // Merge all feature meshes
@@ -198,6 +300,7 @@ namespace Nextzen
             tasks.Clear();
             nTasksForArea = 0;
 
+            features.AddRange(meshList);
             regionMap = new GameObject(RegionName);
             var sceneGraph = new SceneGraph(regionMap, GroupOptions, GameObjectOptions, features);
 
@@ -253,7 +356,8 @@ namespace Nextzen
 
 
 
-        void Start(){
+        void Start()
+        {
             Debug.Log("This is the map builder Agent");
             /* 
             ApiKey = "NO9atv-JQf289NztiKv45g";
