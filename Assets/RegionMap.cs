@@ -3,6 +3,9 @@ using Nextzen.VectorData;
 using Nextzen.VectorData.Formats;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using ummisco.gama.unity.utils;
 using UnityEngine;
 
 
@@ -60,6 +63,7 @@ namespace Nextzen
         private TileCache tileCache = new TileCache(50);
 
         public Matrix4x4 tempTransform;
+        public TileAddress tempTileAddress;
 
         public void DownloadTilesAsync()
         {
@@ -74,6 +78,7 @@ namespace Nextzen
             foreach (var tileAddress in bounds.TileAddressRange)
             {
                 nTasksForArea++;
+                tempTileAddress = tileAddress;
             }
 
 
@@ -156,6 +161,8 @@ namespace Nextzen
                                 tasks.Add(task);
                                 Debug.Log("New Task (from else) to add is " + task.Address.ToString());
                                 Debug.Log("Data is " + task.Data.Count);
+                                string result = System.Text.Encoding.UTF8.GetString(response.data);
+                                Debug.Log("---->>>   Response is " + result);
                             }
                         });
                     };
@@ -165,6 +172,27 @@ namespace Nextzen
                 }
             }
 
+            //--------------------------------
+
+
+            var myTask = new TileTask(Style, tempTileAddress, tempTransform, generation);
+
+            var binFormatter = new BinaryFormatter();
+            var mStream = new MemoryStream();
+            var vect3 = new List<Vector3> {   new Vector3 (0, 0, 0),
+                                                     new Vector3 (100, 0, 0),
+                                                     new Vector3 (100, 100, 0),
+                                                     new Vector3 (0, 100, 0),
+                                                     new Vector3 (0, 100, 100),
+                                                     new Vector3 (100, 100, 100),
+                                                     new Vector3 (100, 0, 100),
+                                                     new Vector3 (0, 0, 100)
+                              };
+            //  binFormatter.Serialize(mStream, vect3);
+
+            //  var myMvtTile = new MvtTile(tempTileAddress, mStream.ToArray());
+            //  myTask.Start(myMvtTile.FeatureCollections);
+            //  tasks.Add(myTask);
 
         }
 
@@ -211,20 +239,12 @@ namespace Nextzen
             // List<Submesh> Submeshes = new List<Submesh>();
             List<Vector3> Vertices = new List<Vector3>();
             List<Vector2> UVs = new List<Vector2>();
-            
+            List<int> Indices = new List<int> ();
 
-            Vertices.AddRange(new List<Vector3> {  new Vector3 (1643.2f, 1.0f, 483.2f),
-                                                    new Vector3 (1645.2f, 1.0f, 433.0f),
-                                                    new Vector3 (1633.2f, 1.0f, 432.5f),
-                                                    new Vector3 (1631.2f, 1.0f, 482.7f)
-                             });
-            UVs.AddRange(new List<Vector2> {
-                new Vector2(0.0f, 0.0f),new Vector2(0.0f, 4.2f),new Vector2(1.0f, 4.2f),new Vector2(1.0f, 0.0f)
-            });
             List<MeshData.Submesh> Submeshes = new List<MeshData.Submesh>();
             MeshData.Submesh submesh = new MeshData.Submesh();
 
-            List<int> Indices = new List<int> { 0, 2, 3, 2, 0, 1 };
+          
             //Material Material = new Material(contents: "UVGrid");
             submesh.Indices = Indices;
             Submeshes.Add(submesh);
@@ -241,45 +261,38 @@ namespace Nextzen
             meshList.Add(featureMesh);
 
 
-            //Cube 
+           
 
 
             featureMesh = new FeatureMesh("NameGama11", "GamaRoads", "NameGama13", "Cube3");
             // featureMesh.Mesh = new MeshData();
 
             meshData = featureMesh.Mesh;
-            // List<Submesh> Submeshes = new List<Submesh>();
-            Vertices = new List<Vector3>();
+         
+            Vector2[] vertices2D = new Vector2[] {
+                        new Vector2(0,0),
+                        new Vector2(10,0),
+                        new Vector2(10,10),
+                        new Vector2(0,10),
+                };
+            Triangulator triangulator = new Triangulator(vertices2D);
+            Vertices = triangulator.get3dVerticesList(vertices2D, 2);
+            Indices = triangulator.getTriangulesList();
+       
             UVs = new List<Vector2>();
-
-            Vertices.AddRange(new List<Vector3> {   new Vector3 (0, 0, 0),
-                                                     new Vector3 (100, 0, 0),
-                                                     new Vector3 (100, 100, 0),
-                                                     new Vector3 (0, 100, 0),
-                                                     new Vector3 (0, 100, 100),
-                                                     new Vector3 (100, 100, 100),
-                                                     new Vector3 (100, 0, 100),
-                                                     new Vector3 (0, 0, 100)
-                              });
 
             UVs.AddRange(new List<Vector2> {
                new Vector2(0.0f,0.2f),new Vector2(0.0f,0.2f),new Vector2(0.0f,0.0f),new Vector2(0.0f,0.0f),new Vector2(0.1f,0.2f),new Vector2(0.0f,0.2f),new Vector2(0.1f,0f),new Vector2(0.0f,0.0f)
-            
              });
             Submeshes = new List<MeshData.Submesh>();
             submesh = new MeshData.Submesh();
 
-            Indices = new List<int> { 0, 2, 1, 0, 3, 2, 2, 3, 4, 2, 4, 5, 1, 2, 5, 1, 5, 6, 0, 7, 4, 0, 4, 3, 5, 4, 7, 5, 7, 6, 0, 6, 7, 0, 1, 6 };
-            //Indices = new List<int> ();
             submesh.Indices = Indices;
             Submeshes.Add(submesh);
 
             meshData.addGamaMeshData(Vertices, UVs, Submeshes);
             featureMesh.Mesh = meshData;
             meshList.Add(featureMesh);
-
-
-
 
 
             if (regionMap != null)

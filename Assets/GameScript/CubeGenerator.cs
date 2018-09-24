@@ -18,7 +18,7 @@ public class CubeGenerator : MonoBehaviour {
 	GameObject objectTest;
 
 
-	Boolean isMove = true;
+	Boolean isMove = false;
 
 	void Start () {
 		
@@ -42,7 +42,7 @@ public class CubeGenerator : MonoBehaviour {
 
 	private GameObject CreateCube (string name) {
 
-		GameObject ob = new GameObject("Empty");
+		GameObject ob = new GameObject(name);
 
 		ob.name = name;
 
@@ -94,7 +94,7 @@ public class CubeGenerator : MonoBehaviour {
 		mesh.RecalculateNormals ();
 
 
-		//ob.GetComponent<MeshFilter>().mesh = mesh;
+		ob.GetComponent<MeshFilter>().mesh = mesh;
 
 
 		return ob;
