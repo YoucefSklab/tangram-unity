@@ -243,7 +243,7 @@ namespace ummisco.gama.unity.utils
                 triangles[count_tris + 5] = i + m_points.Count;
                 count_tris += 6;
             }
-            return triangles.OfType<int>().ToList();;
+            return triangles.OfType<int>().ToList();
         }
 
 

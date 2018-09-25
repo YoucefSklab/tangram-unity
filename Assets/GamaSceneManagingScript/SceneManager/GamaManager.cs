@@ -20,8 +20,8 @@ using System.Reflection;
 using System.ComponentModel;
 using ummisco.gama.unity.topics;
 using System.Globalization;
-
-
+using ummisco.gama.unity.GamaAgent;
+using Nextzen;
 
 public class GamaManager : MonoBehaviour
 {
@@ -49,7 +49,9 @@ public class GamaManager : MonoBehaviour
 
     public List<GameObject> objectsList = new List<GameObject>();
 
-	public Material planeMaterial ;
+    public static List<Agent> gamaAgentList = new List<Agent>();
+
+    public Material planeMaterial;
 
     public GameObject setTopicManager, getTotpicManager, moveTopicManager, notificationTopicManager;
 
@@ -76,14 +78,14 @@ public class GamaManager : MonoBehaviour
 
         gamaManager = gameObject;
 
+/* 
 
-
-		// Create the plane game Object
+        // Create the plane game Object
         plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
         plane.transform.localScale = new Vector3(20, 1, 20);
         plane.GetComponent<Renderer>().material = planeMaterial;
 
-
+*/
 
         // Create the Topic's manager GameObjects
         new GameObject(MqttSetting.COLOR_TOPIC_MANAGER).AddComponent<ColorTopic>();
@@ -136,7 +138,7 @@ public class GamaManager : MonoBehaviour
     void FixedUpdate()
     {
 
-        //Debug.Log ("-> The number of all created gameObjects is : "+ objectsList.Count);
+        Debug.Log("-> The number of all received agents is : " + gamaAgentList.Count);
 
         if (msgList.Count > 0)
         {
@@ -382,6 +384,14 @@ public class GamaManager : MonoBehaviour
         }
 
         checkForNotifications();
+        Debug.Log("Check if there are objects to create!");
+        GameObject builder = getGameObjectByName("MapBuilder");
+        if (builder != null)
+        {
+            builder.GetComponent<RegionMap>().SendMessage("DrawNewAgents");
+			Debug.Log("Drawing agent is done! "+(new DateTime()).ToString());
+        }
+
 
     }
 
@@ -505,8 +515,14 @@ public class GamaManager : MonoBehaviour
 
     public GameObject getGameObjectByName(string objectName)
     {
+        System.Diagnostics.StackTrace stackTrace = new System.Diagnostics.StackTrace();
+        Debug.Log("Get calling method name ->  " + stackTrace.GetFrame(1).GetMethod().Name);
         foreach (GameObject gameObj in allObjects)
         {
+            if (gameObj == null)
+            {
+                return null;
+            }
             if (gameObj.activeInHierarchy)
             {
                 if (objectName.Equals(gameObj.name))

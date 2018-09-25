@@ -4,8 +4,10 @@ using Nextzen.VectorData.Formats;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using ummisco.gama.unity.utils;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -58,12 +60,15 @@ namespace Nextzen
 
         private AsyncWorker worker = new AsyncWorker(2);
 
-        private GameObject regionMap;
+        private GameObject regionMap = null;
 
         private TileCache tileCache = new TileCache(50);
 
         public Matrix4x4 tempTransform;
         public TileAddress tempTileAddress;
+
+
+
 
         public void DownloadTilesAsync()
         {
@@ -239,12 +244,12 @@ namespace Nextzen
             // List<Submesh> Submeshes = new List<Submesh>();
             List<Vector3> Vertices = new List<Vector3>();
             List<Vector2> UVs = new List<Vector2>();
-            List<int> Indices = new List<int> ();
+            List<int> Indices = new List<int>();
 
             List<MeshData.Submesh> Submeshes = new List<MeshData.Submesh>();
             MeshData.Submesh submesh = new MeshData.Submesh();
 
-          
+
             //Material Material = new Material(contents: "UVGrid");
             submesh.Indices = Indices;
             Submeshes.Add(submesh);
@@ -261,14 +266,14 @@ namespace Nextzen
             meshList.Add(featureMesh);
 
 
-           
+
 
 
             featureMesh = new FeatureMesh("NameGama11", "GamaRoads", "NameGama13", "Cube3");
             // featureMesh.Mesh = new MeshData();
 
             meshData = featureMesh.Mesh;
-         
+
             Vector2[] vertices2D = new Vector2[] {
                         new Vector2(0,0),
                         new Vector2(10,0),
@@ -278,7 +283,7 @@ namespace Nextzen
             Triangulator triangulator = new Triangulator(vertices2D);
             Vertices = triangulator.get3dVerticesList(vertices2D, 2);
             Indices = triangulator.getTriangulesList();
-       
+
             UVs = new List<Vector2>();
 
             UVs.AddRange(new List<Vector2> {
@@ -386,5 +391,85 @@ namespace Nextzen
             Debug.Log("This is the map builder Agent");
             */
         }
+
+
+
+        public void DrawNewAgents()
+        {
+
+            List<FeatureMesh> meshList = new List<FeatureMesh>();
+            foreach (var agent in GamaManager.gamaAgentList)
+            {
+                if (!agent.isDrawed)
+                {
+                    agent.isDrawed = true;
+
+                    FeatureMesh featureMesh = new FeatureMesh("NameGama1", "GamaRoads", "NameGama13", agent.agentName);
+                    List<Vector3> Vertices = new List<Vector3>();
+                    List<Vector2> UVs = new List<Vector2>();
+                    List<int> Indices = new List<int>();
+                    MeshData meshData = featureMesh.Mesh;
+                    List<MeshData.Submesh> Submeshes = new List<MeshData.Submesh>();
+                    MeshData.Submesh submesh = new MeshData.Submesh();
+
+                    Vector2[] vertices2D = agent.agentCoordinate.getVector2Coordinates();
+
+                    Triangulator triangulator = new Triangulator(vertices2D);
+                    Vertices = triangulator.get3dVerticesList(vertices2D, 2);
+                    Indices = triangulator.getTriangulesList();
+                    UVs = new List<Vector2>();
+
+                    Vector3[] VerticesArray = Vertices.ToArray();
+
+                    Vector2[] UvArray =  UvCalculator.CalculateUVs(VerticesArray, 1);
+
+                    UVs = UvArray.ToList();
+
+                    submesh.Indices = Indices;
+                    Submeshes.Add(submesh);
+
+                    meshData.addGamaMeshData(Vertices, UVs, Submeshes);
+                    featureMesh.Mesh = meshData;
+                    meshList.Add(featureMesh);
+
+                    meshList.Add(featureMesh);
+                    
+                }
+            }
+
+            if (regionMap != null)
+            {
+              //  DestroyImmediate(regionMap); Debug.Log("regionMap is Null");
+            }
+
+            // Merge all feature meshes
+            List<FeatureMesh> features = new List<FeatureMesh>();
+            /* 
+            foreach (var task in tasks)
+            {
+                if (task.Generation == generation)
+                {
+                    features.AddRange(task.Data);
+                }
+            }
+
+            tasks.Clear();
+            nTasksForArea = 0;
+            */
+
+            features.AddRange(meshList);
+            regionMap = new GameObject(RegionName);
+            var sceneGraph = new SceneGraph(regionMap, GroupOptions, GameObjectOptions, features);
+
+            sceneGraph.Generate();
+        }
+
+
+
+
+
+
+
+
     }
 }

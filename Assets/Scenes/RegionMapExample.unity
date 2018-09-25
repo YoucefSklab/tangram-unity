@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 349009245}
   - component: {fileID: 349009244}
   m_Layer: 0
-  m_Name: Map Builder
+  m_Name: MapBuilder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
